@@ -19,6 +19,7 @@ public:
     BinomialHeap *merge(BinomialHeap &b1, BinomialHeap &b2);
     BinomialHeap *junction(BinomialHeap &b1, BinomialHeap &b2);
     void decreaseKey(BinomialHeap &b,void *oldValue,int newKey);
+    void increaseKeybyOne(BinomialHeap &b,void *oldValue);
     NodoB *extractMin(BinomialHeap &b);
     NodoB * findMin(NodoB &aNode);
     void insert(BinomialHeap &bh,NodoB &temp1);
@@ -29,7 +30,7 @@ public:
     void binomialHeap2file(BinomialHeap &bh);
     void bfsPrint(NodoB &b);
 
-    void *crearNodo(void * address,unsigned int size, BinomialHeap &bh);
+    void *crearNodo(void * addressSource,unsigned int size, BinomialHeap &bh);
     void asignar(void *additional, void *source);
     void liberar(void *object);
 

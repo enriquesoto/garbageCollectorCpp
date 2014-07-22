@@ -149,11 +149,77 @@ void BinomialHeap::decreaseKey(BinomialHeap &b, void *oldValue, int newKey)
 
         //cambiar satelites si los hay
 
+        //cambiando size
+        int tempSize;
+        tempSize = y->size;
+        y->size = z->size;
+        z->size = tempSize;
+
+        //cambiando address
+
+        void* tempAddress;
+        tempAddress = y->address;
+        y->address = z->address;
+        z->address = tempAddress;
+
         y = z;
         z = y->parent; //:D
 
     }
 
+}
+
+void BinomialHeap::increaseKeybyOne(BinomialHeap &b, void *oldValue)
+{
+    NodoB *y;
+    NodoB *z;
+    NodoB *foundNode;
+
+//    if( newKey > oldValue)
+//        qDebug()<<"error la nueva llave es mas grande que la actual llave";
+    NodoB *headB=*b.heap.begin();
+    foundNode = find(*headB,oldValue);
+    foundNode->key++;
+    y = foundNode;
+    NodoB *myNodeTemp = *foundNode->pChild.begin();
+    if (myNodeTemp==NULL)
+        return;
+    else
+
+        z = findMin(*myNodeTemp);//hijo con menor key
+
+
+    while(z != NULL && y->key > z->key){
+
+        int tempKey; //intercambio de llaves
+        tempKey = y->key;
+        y->key=z->key;
+        z->key = tempKey;
+
+        //cambiar satelites si los hay
+
+        //cambiando size
+        int tempSize;
+        tempSize = y->size;
+        y->size = z->size;
+        z->size = tempSize;
+
+        //cambiando address
+
+        void* tempAddress;
+        tempAddress = y->address;
+        y->address = z->address;
+        z->address = tempAddress;
+
+
+        y = z;
+        NodoB *temp=*z->pChild.begin();
+        if (temp==NULL)
+            return;
+        else
+            z = findMin(*temp); //:D
+
+    }
 }
 
 NodoB *BinomialHeap::extractMin(BinomialHeap &b)
@@ -178,23 +244,10 @@ NodoB *BinomialHeap::extractMin(BinomialHeap &b)
         }else
             if(!minTemp->siblingIzq){
                 minTemp->siblingDer->siblingIzq=NULL;
-
             }
-    //borrar
-//    NodoB *headTemp = *b.heap.begin();
-//    headTemp=minTemp->siblingDer;
-//    minTemp=NULL;
+
     b.junction(b,*btempExtractMin);
-
-    *b.heap.begin() = minTemp->siblingDer;
-
-    //delete(minTemp->address,minTemp->size);
-
-//    headTemp = minTemp->siblingDer;
-    minTemp->siblingDer=NULL;
-
-
-
+    qDebug()<<"kike";
 
     return minTemp;
 
@@ -379,16 +432,18 @@ void BinomialHeap::bfsPrint(NodoB &b)
 
 }
 
-void *BinomialHeap::crearNodo(void *address, unsigned int size,BinomialHeap &bh)
+void *BinomialHeap::crearNodo(void *addressSource, unsigned int size,BinomialHeap &bh)
 {
     NodoB *myNode=new NodoB();
     myNode->setKey(1);
     myNode->setSize(size);
-    myNode->setAdress(address);
+
     BinomialHeap *temp= &bh;
     this->insert(*temp,*myNode);
-    //address
-    return address;
+    void *addressTarget = malloc(size); //separo direccioon en  memrioa
+    memcpy(addressTarget,addressSource,size); //copio los bloques de memoria
+    myNode->setAdress(addressTarget);
+    return addressTarget;
 
 }
 
@@ -402,7 +457,10 @@ void BinomialHeap::asignar(void *additional, void *source) // q , p(ya existe)
         qDebug()<<"error! no existe el objeto del segundo argumento";
         return ;
     }
-    temp->key++;
+    //temp->key++;
+    this->increaseKeybyOne(*this,source);
+    additional = source;
+
 
 }
 
@@ -419,7 +477,7 @@ void BinomialHeap::liberar(void *object)
     if(temp->key==0){
         deleteNode(*this,object);
         //delete(object,temp->size);
-        delete object;
+        free(object);
 
     }
 
